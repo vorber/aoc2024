@@ -7,6 +7,7 @@ fn solve(day:&String) {
     match day.as_str() {
         "1" => puzzles::day1::solve(),
         "2" => puzzles::day2::solve(),
+        "3" => puzzles::day3::solve(),
         _ => panic!("no solution known!")
     }
 }
