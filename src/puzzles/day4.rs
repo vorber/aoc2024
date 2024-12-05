@@ -60,4 +60,5 @@ MXMXAXMASX");
         assert_eq!(d4p1(&grid), 18);
         assert_eq!(d4p2(&grid), 9);
     }
+    
 }

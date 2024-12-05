@@ -27,13 +27,13 @@ impl<T> Grid<T> {
     fn pos(&self, p: usize) -> Point {
         Point::new((p % self.width) as i32, (p / self.height) as i32)
     }
-
+    
     pub fn contains(&self, p: &Point) -> bool {
         p.x >= 0 && (p.x as usize) < self.width && p.y >= 0 && (p.y as usize) < self.height
     }
 
     pub fn try_get(&self, p:&Point) -> Option<&T> {
-        self.cells.get(self.idx(p))
+        if self.contains(p) { Some(&self[p]) } else {None}
     }
 
     pub fn points_iter(&self) -> GridIter<'_, T> {
