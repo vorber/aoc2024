@@ -44,13 +44,12 @@ fn exit_path(initial:Guard, grid:&Grid<char>, extra_obstacle:Option<Point>) -> O
     let mut g = initial;
     let mut path = Vec::new();
     while grid.contains(&g.pos) {
-        path.push(g.pos);
         let next = g.next();
-
         if Some(&'#') == grid.try_get(next.pos) || extra_obstacle.is_some_and(|p| p == next.pos) {
             if !visited.insert(g) { return None; }
             g = g.turn_right();
         } else {
+            path.push(g.pos);
             g = next;
         }
     }
@@ -61,7 +60,7 @@ fn part2(grid:&Grid<char>) -> usize {
     let initial = Guard { pos:grid.find('^').unwrap(), dir:Point::new(0, -1) };
     let path = exit_path(initial, grid, None).unwrap();
     let mut cs = HashSet::new();
-    path.iter().for_each(|&p| {
+    path.iter().skip(1).for_each(|&p| {
         if exit_path(initial, grid, Some(p)).is_none() { cs.insert(p); }
     });
     cs.len()
