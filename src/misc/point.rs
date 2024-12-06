@@ -1,4 +1,4 @@
-use std::{ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign}, usize};
+use std::{hash::{Hash, Hasher}, ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign}, usize};
 type Coord = i32;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -6,6 +6,8 @@ pub struct Point {
     pub x: Coord,
     pub y: Coord
 }
+
+impl AsRef<Point> for Point { fn as_ref(&self) -> &Self { self } }
 
 impl Point {
     #[inline]
@@ -16,6 +18,10 @@ impl Point {
 
     pub fn offset(self, count: usize, dir:Point) -> Self {
         self + (count as  Coord) * dir 
+    }
+
+    pub fn rotate_clockwise(&self) -> Self {
+        Point::new(-self.y, self.x)
     }
 }
 
@@ -85,5 +91,12 @@ impl MulAssign<Coord> for Point {
     fn mul_assign(&mut self, rhs: Coord) {
         self.x *= rhs;
         self.y *= rhs;
+    }
+}
+
+impl Hash for Point {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.x.hash(state);
+        self.y.hash(state);
     }
 }

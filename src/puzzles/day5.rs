@@ -47,6 +47,17 @@ mod tests {
     use super::*;
 
     #[test]
+    fn tt() {
+        let data = String::from("1|2
+2|3
+3|4
+4|5
+
+1,3,4,2,5");
+        assert_eq!(part2(&data), 3);
+    }
+
+    #[test]
     fn sample_data() {
         let data = String::from("47|53
 97|13

@@ -1,4 +1,4 @@
-use std::ops::Index;
+use std::ops::{Index, IndexMut};
 
 use super::point::Point;
 
@@ -19,25 +19,47 @@ impl Grid<char> {
     }
 }
 
+impl<T> Grid<T>  {
+   pub fn dup<U: Default+Copy>(&self) -> Grid<U> {
+        Grid {width: self.width, height: self.height, cells: vec![U::default(); self.width*self.height]}
+    }  
+}
+
+impl<T: Copy + PartialEq> Grid<T> {
+    pub fn find(&self, item: T) -> Option<Point> {
+        self.cells.iter().position(|&v| v == item).map(|i| self.pos(i))
+    }
+}
+
 impl<T> Grid<T> {
     fn idx(&self, p: &Point) -> usize {
         ((self.width as i32)*p.y + p.x) as usize 
     }
 
     fn pos(&self, p: usize) -> Point {
-        Point::new((p % self.width) as i32, (p / self.height) as i32)
+        Point::new((p % self.width) as i32, (p / self.width) as i32)
     }
     
     pub fn contains(&self, p: &Point) -> bool {
         p.x >= 0 && (p.x as usize) < self.width && p.y >= 0 && (p.y as usize) < self.height
     }
 
-    pub fn try_get(&self, p:&Point) -> Option<&T> {
-        if self.contains(p) { Some(&self[p]) } else {None}
+    pub fn bound_checker(&self) -> impl Fn(&Point) -> bool + '_ {
+        |p| self.contains(p)
+    }
+
+    pub fn try_get<U :AsRef<Point>>(&self, p:U) -> Option<&T> {
+        if self.contains(p.as_ref()) { Some(&self[p.as_ref()]) } else {None}
     }
 
     pub fn points_iter(&self) -> GridIter<'_, T> {
         GridIter { grid: self, pos: 0 }
+    }
+}
+
+impl<T: PartialEq + 'static> Grid<T> {
+    pub fn value_checker(&self, value: T) -> impl Fn(&Point) -> bool + '_ {
+        move |p| self.contains(p) && self[p] == value
     }
 }
 
@@ -53,6 +75,14 @@ impl<T> Index<&Point> for Grid<T> {
 
     #[inline]
     fn index(&self, pos: &Point) -> &Self::Output { &self.cells[self.idx(pos)] }
+}
+
+impl<T> IndexMut<&Point> for Grid<T> {
+    #[inline]
+    fn index_mut(&mut self, p: &Point) -> &mut Self::Output {
+        let i = self.idx(p);
+        &mut self.cells[i]
+    }
 }
 
 pub struct GridIter<'a, T> {
