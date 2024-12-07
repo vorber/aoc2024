@@ -1,4 +1,5 @@
 use std::fs;
+
 type Number = i128;
 
 pub fn solve() {
@@ -7,60 +8,51 @@ pub fn solve() {
     println!("P2: {p2}", p2 = part2(&data));
 }
 
-fn part1(data:&String) -> Number {
-    _solve(data, false)
-}
-
-fn part2(data:&String) -> Number {
-    _solve(data, true)
-}
+fn part1(data:&String) -> Number { _solve(data, false) }
+fn part2(data:&String) -> Number { _solve(data, true) }
 
 fn _solve(data:&String, p2:bool) -> Number {
     data.lines()
         .map(parse_line)
-        .filter_map(|(t,xs)| try_produce(t, xs.iter().rev().collect::<Vec<_>>().as_slice(), p2))
+        .filter(|(t,xs)| try_produce(*t, xs.as_slice(), p2))
+        .map(|(t,_xs)| t)
         .sum()
 }
 
 fn parse_line(line:&str) -> (Number, Vec<u16>) {
-    let mut lr = line.split(':');
-    let t = lr.next().map(|s| s.parse().unwrap()).unwrap();
-    let xs = lr.next().map(|ss| ss.split_whitespace().map(|s| s.parse().unwrap())).unwrap().collect();
+    let (tt,xx) = line.split_once(':').unwrap();
+    let t = tt.parse().unwrap();
+    let xs = xx.split_whitespace().map(|s| s.parse().unwrap()).collect();
     (t,xs)
 }
 
-enum Ops {
-    Add,
-    Mul,
-    Conc
-}
+enum Ops { Add, Mul, Conc }
 
-fn try_produce(target: Number, xs:&[&u16], p2:bool) -> Option<Number> {
+fn try_produce(target: Number, xs:&[u16], p2:bool) -> bool {
     match xs {
-        [] => None,
-        [&x] => (target == x as Number).then_some(target),
-        [&x, ..] => {
-            let x = x as Number;
+        [] => false,
+        [x] => target == *x as Number,
+        [rest @ .., x] => {
+            let x = *x as Number;
             let l = l10(x);
             let mut ops = vec![Ops::Add];
             if p2 && target % l == x { ops.push(Ops::Conc); }
             if target % x == 0 { ops.push(Ops::Mul); }
-            let xs = &xs[1..];
-            let rec  = |t| try_produce(t, xs, p2);
-            try_ops(ops, target, x, rec).is_some().then_some(target)
+            let rec  = |t| try_produce(t, rest, p2);
+            try_ops(ops, target, x, rec)
         }
     }
 }
 
-fn try_ops(ops: Vec<Ops>, target: Number, x:Number, try_rec:impl Fn(Number) -> Option<Number>) -> Option<Number> {
+fn try_ops(ops: Vec<Ops>, target: Number, x:Number, try_rec:impl Fn(Number) -> bool) -> bool {
     ops.iter()
         .map(|op| {
             match op {
                 Ops::Add => try_rec(target-x),
                 Ops::Mul => try_rec(target/x),
-                Ops::Conc => try_rec((target-x)/l10(x))
+                Ops::Conc => try_rec(target/l10(x))
             }})
-        .fold(None, |acc, r| acc.or(r))
+        .fold(false, |acc, r| acc || r)
 }
 
 fn l10(n:Number) -> Number {
