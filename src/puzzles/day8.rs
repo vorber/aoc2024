@@ -12,9 +12,11 @@ pub fn solve() {
 
 fn part1(grid:&Grid<char>) -> usize { count_antinodes(grid, |_p| 1..2) }
 
-fn part2(grid:&Grid<char>) -> usize { count_antinodes(grid, |d|  0..max(grid.width/d.x.abs() as usize, grid.height/d.y.abs() as usize)) }
+fn part2(grid:&Grid<char>) -> usize {
+    count_antinodes(grid, |d|  0..max(grid.width/d.x.abs() as usize, grid.height/d.y.abs() as usize)) 
+}
 
-fn count_antinodes(grid:&Grid<char>, r:impl Fn(&Point) -> Range<usize> ) -> usize {
+fn count_antinodes(grid:&Grid<char>, range:impl Fn(&Point) -> Range<usize> ) -> usize {
     let antennas = grid.points_iter()
         .filter(|&p| grid[p] != '.')
         .map(|p| (grid[p], p))
@@ -25,8 +27,7 @@ fn count_antinodes(grid:&Grid<char>, r:impl Fn(&Point) -> Range<usize> ) -> usiz
                 .flat_map(|pair| {
                     let (a,b) = (pair[0], pair[1]);
                     let d = *b-*a;
-                    let range = r(&d);
-                    range.flat_map(|i| [*b+i*d, *a-i*d]).collect_vec()
+                    range(&d).flat_map(|i| [*b+i*d, *a-i*d]).collect_vec()
                 })
                 .collect_vec()
         })
