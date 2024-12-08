@@ -86,6 +86,15 @@ impl Mul<Point> for Coord {
     }
 }
 
+impl Mul<Point> for usize {
+    type Output = Point;
+
+    #[inline]
+    fn mul(self, rhs: Point) -> Self::Output {
+        rhs * self as Coord
+    }
+}
+
 impl MulAssign<Coord> for Point {
     #[inline]
     fn mul_assign(&mut self, rhs: Coord) {
