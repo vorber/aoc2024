@@ -1,4 +1,4 @@
-use std::ops::{Index, IndexMut};
+use std::{fmt::{self, Debug, Display}, ops::{Index, IndexMut}};
 
 use super::point::Point;
 
@@ -20,7 +20,7 @@ impl Grid<char> {
 }
 
 impl<T> Grid<T>  {
-   pub fn dup<U: Default+Copy>(&self) -> Grid<U> {
+   pub fn dup<U: Default + Clone>(&self) -> Grid<U> {
         Grid {width: self.width, height: self.height, cells: vec![U::default(); self.width*self.height]}
     }  
 }
@@ -98,4 +98,24 @@ impl<'a,T> Iterator for GridIter<'a, T> {
         let pt = self.grid.pos(self.pos);
         self.grid.contains(&pt).then_some(pt)
     }
+}
+
+impl<T:Debug> Debug for Grid<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Grid")
+            .field("width", &self.width)
+            .field("height", &self.height)
+            .field("cells", &self.cells)
+            .finish()
+    }
+}
+
+impl<T:Debug> Grid<T> {
+    pub fn print(&self) {
+        println!("Grid {w}x{h}", w = &self.width, h = &self.height);
+        for row in 0..self.height {
+            println!("r{row}: {:?}", &self.cells[row*self.width..(row+1)*self.width]);
+        }
+    }
+    
 }

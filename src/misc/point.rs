@@ -1,6 +1,12 @@
 use std::{hash::{Hash, Hasher}, ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign}, usize};
 type Coord = i32;
 
+pub const NORTH: Point = Point::new(0, -1);
+pub const SOUTH: Point = Point::new(0, 1);
+pub const WEST: Point = Point::new(-1, 0);
+pub const EAST: Point = Point::new(1, 0);
+pub const ORTHO_DIR: [Point; 4] = [NORTH, SOUTH, WEST, EAST];
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Point {
     pub x: Coord,
@@ -22,6 +28,11 @@ impl Point {
 
     pub fn rotate_clockwise(&self) -> Self {
         Point::new(-self.y, self.x)
+    }
+
+    #[inline]
+    pub fn manhattan_distance(self, other: Self) -> i32 {
+        (self.x - other.x).abs() + (self.y - other.y).abs()
     }
 }
 
