@@ -16,7 +16,7 @@ struct Guard {
 }
 impl Guard {
     fn turn_right(self) -> Self {
-        Guard {pos: self.pos, dir: self.dir.rotate_clockwise()}
+        Guard {pos: self.pos, dir: self.dir.rotate_cw()}
     }
     
     fn next(self) ->  Self {

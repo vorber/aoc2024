@@ -26,14 +26,33 @@ impl Point {
         self + (count as  Coord) * dir 
     }
 
-    pub fn rotate_clockwise(&self) -> Self {
+    pub fn rotate_cw(&self) -> Self {
         Point::new(-self.y, self.x)
+    }
+
+    pub fn rotate_ccw(&self) -> Self {
+        Point::new(self.y, -self.x)
+    }
+
+    pub fn rotate_ccw_times(&self, times:usize) -> Self {
+        (0..times).fold(*self, |p:Point, _x| p.rotate_ccw())
     }
 
     #[inline]
     pub fn manhattan_distance(self, other: Self) -> i32 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
+
+    #[inline]
+    pub fn dot(&self, other: Self) -> Coord {
+        self.x*other.x + self.y*other.y
+    }
+
+    #[inline]
+    pub fn cross(&self, other: Self) -> Coord {
+        self.x*other.y - self.y*other.x
+    }
+
 }
 
 impl Add for Point {
@@ -42,6 +61,14 @@ impl Add for Point {
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         Point::new(self.x + rhs.x, self.y + rhs.y)
+    }
+}
+
+impl<'a, 'b> Add<&'b Point> for &'a Point {
+    type Output = Point;
+
+    fn add(self, other: &'b Point) -> Self::Output {
+        Point::new(self.x + other.x, self.y + other.y)
     }
 }
 
@@ -59,6 +86,14 @@ impl Sub for Point {
     #[inline]
     fn sub(self, rhs: Self) -> Self::Output {
         Point::new(self.x - rhs.x, self.y - rhs.y)
+    }
+}
+
+impl<'a, 'b> Sub<&'b Point> for &'a Point {
+    type Output = Point;
+
+    fn sub(self, other: &'b Point) -> Self::Output {
+        Point::new(self.x - other.x, self.y - other.y)
     }
 }
 
@@ -118,5 +153,18 @@ impl Hash for Point {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.x.hash(state);
         self.y.hash(state);
+    }
+
+}
+
+impl Ord for Point {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.x.cmp(&other.x).then(self.y.cmp(&other.y))
+    }
+}
+
+impl PartialOrd for Point {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }

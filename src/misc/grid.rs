@@ -67,14 +67,18 @@ impl<T> Index<Point> for Grid<T> {
     type Output = T;
 
     #[inline]
-    fn index(&self, pos: Point) -> &Self::Output { &self.cells[self.idx(&pos)] }
+    fn index(&self, pos: Point) -> &Self::Output { 
+        &self.cells[self.idx(&pos)] 
+    }
 }
 
 impl<T> Index<&Point> for Grid<T> {
     type Output = T;
 
     #[inline]
-    fn index(&self, pos: &Point) -> &Self::Output { &self.cells[self.idx(pos)] }
+    fn index(&self, pos: &Point) -> &Self::Output { 
+        &self.cells[self.idx(pos)] 
+    }
 }
 
 impl<T> IndexMut<&Point> for Grid<T> {
@@ -94,8 +98,8 @@ impl<'a,T> Iterator for GridIter<'a, T> {
     type Item = Point;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.pos += 1;
         let pt = self.grid.pos(self.pos);
+        self.pos += 1;
         self.grid.contains(&pt).then_some(pt)
     }
 }
