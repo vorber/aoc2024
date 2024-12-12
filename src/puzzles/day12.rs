@@ -10,26 +10,24 @@ pub fn solve() {
     println!("P2: {p2}", p2 = part2(&grid));
 }
 
-fn part1(grid:&Grid<char>) -> usize {
-    get_regions(grid).into_iter().map(|r| r.len() * perimeter(&r)).sum()
+fn part1(grid:&Grid<char>) -> usize { _solve(grid, perimeter) }
+
+fn part2(grid:&Grid<char>) -> usize { _solve(grid, sides) }
+
+fn _solve(grid:&Grid<char>, factor: impl Fn(&HashSet<Point>) -> usize) -> usize {
+    get_regions(grid).into_iter().map(|r| r.len() * factor(&r)).sum()
 }
 
 fn perimeter(r:&HashSet<Point>) -> usize {
-    r.iter()
-        .map(|&pt| ORTHO_DIR.map(|d| d+pt).iter().filter(|p| !r.contains(p)).count())
-        .sum::<usize>()
-}
-
-fn part2(grid:&Grid<char>) -> usize {
-    get_regions(grid).into_iter().map(|r| r.len() * sides(&r)).sum()
+    r.iter().map(|pt| outside_dirs(pt,r).count()).sum::<usize>()
 }
 
 fn sides(r:&HashSet<Point>) -> usize {
     let outer = r.iter()
-        .map(|pt| outer_neighbors(pt, r).tuple_combinations().filter(|(a,b)| has_corner(a, b)).count())
+        .map(|pt| outside_dirs(pt, r).tuple_combinations().filter(|(a,b)| has_corner(a, b)).count())
         .sum::<usize>();
     let inner = r.into_iter()
-        .flat_map(|pt| outer_neighbors(pt, r).map(move |d| (*pt+d,d)).collect_vec())
+        .flat_map(|pt| outside_dirs(pt, r).map(move |d| (*pt+d,d)).collect_vec())
         .into_group_map()
         .into_iter()
         .map(|(pt, ds)| ds.into_iter().tuple_combinations().filter(|(a,b)| has_inner_corner(&pt, a, b, r)).count())
@@ -37,7 +35,7 @@ fn sides(r:&HashSet<Point>) -> usize {
     outer + inner
 }
 
-fn outer_neighbors<'a>(pt: &'a Point, r:&'a HashSet<Point>) -> impl Iterator<Item = Point> + use<'a> + Clone {
+fn outside_dirs<'a>(pt: &'a Point, r:&'a HashSet<Point>) -> impl Iterator<Item = Point> + use<'a> + Clone {
     ORTHO_DIR.into_iter().filter(|d| !r.contains(&(d+pt)))
 }
 
