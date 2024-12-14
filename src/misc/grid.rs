@@ -1,4 +1,4 @@
-use std::{fmt::{self, Debug, Display}, ops::{Index, IndexMut}};
+use std::{fmt::{self, Debug}, ops::{Index, IndexMut}};
 
 use super::point::Point;
 

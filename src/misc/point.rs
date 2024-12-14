@@ -1,4 +1,4 @@
-use std::{hash::{Hash, Hasher}, ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign}, usize};
+use std::{hash::{Hash, Hasher}, ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 type Coord = i32;
 
 pub const NORTH: Point = Point::new(0, -1);
@@ -53,6 +53,20 @@ impl Point {
         self.x*other.y - self.y*other.x
     }
 
+    pub fn wrap(&self, width:usize, height: usize) -> Point {
+        let w = width as Coord;
+        let h = height as Coord;
+        let x = self.x % w;
+        let y = self.y % h;
+        let wrap_x = if x < 0 { x+w } else { x };
+        let wrap_y = if y < 0 { y+h } else { y };
+        Point::new(wrap_x, wrap_y)
+    }
+
+    #[inline]
+    pub fn magnitude(&self) -> Coord {
+        self.x*self.x + self.y*self.y
+    }
 }
 
 impl Add for Point {
