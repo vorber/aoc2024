@@ -18,8 +18,7 @@ struct Robot {
 
 impl Robot {
     fn step(&self, seconds: usize, w:usize, h:usize) -> Point {
-        let p = self.position + seconds*self.velocity;
-        p.wrap(w, h)
+        (self.position + seconds*self.velocity).wrap(w, h)
     }
 }
 
