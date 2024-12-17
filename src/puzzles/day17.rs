@@ -108,14 +108,11 @@ struct DidntFit;
 fn smallest_fit(numbers:&[&u8], preset:u64) -> Result<u64, DidntFit> {
     match numbers {
         [] => Ok(preset),
-        [&head, tail@..] => {
-            (0..8)
-                .map(|s| (preset << 3) + s)
-                .filter(|c| (c>>((c%8)^2)) % 8 == (c%8)^(head as u64)^1)
-                .filter_map(|p| smallest_fit(tail, p).ok())
-                .min()
-                .ok_or(DidntFit)
-        }
+        [&head, tail@..] => (0..8).map(|s| (preset << 3) + s)
+            .filter(|c| (c>>((c%8)^2)) % 8 == (c%8)^(head as u64)^1)
+            .filter_map(|p| smallest_fit(tail, p).ok())
+            .min()
+            .ok_or(DidntFit)
     }
 }
 
