@@ -93,7 +93,7 @@ fn part1_decompiled(a: u32) -> String {
     let mut out=Vec::new();
     while a>0 {
         out.push(((a>>((a%8)^2))^((a%8)^1))%8);
-        a/=8;
+        a >>= 3;
     }
     out.iter().map(|v| v.to_string()).join(",")
 }
