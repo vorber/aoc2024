@@ -136,7 +136,7 @@ Register C: 0
 Program: 0,1,5,4,3,0
 ");
         let (m,p) = parse_input(&i);
-        assert_eq!(part1(&m, &p), "4,6,3,5,6,3,5,2,1,0");
+        assert_eq!(part1(m, &p), "4,6,3,5,6,3,5,2,1,0");
     }
 
 }
