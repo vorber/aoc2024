@@ -123,8 +123,8 @@ mod tests {
 
     #[test]
     fn small_1() {
-        assert_eq!(Machine::new(10, 0, 0).run(&vec![5,0,5,1,5,4]), vec![0,1,2]);
-        assert_eq!(Machine::new(2024, 0, 0).run(&vec![0,1,5,4,3,0]), vec![4,2,5,6,7,7,7,7,3,1,0]);
+        assert_eq!(run_machine((10, 0, 0), &vec![5,0,5,1,5,4]), vec![0,1,2]);
+        assert_eq!(run_machine((2024, 0, 0), &vec![0,1,5,4,3,0]), vec![4,2,5,6,7,7,7,7,3,1,0]);
     }
 
     #[test]
