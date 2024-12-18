@@ -3,22 +3,35 @@ use std::{collections::{HashMap, HashSet}, fs, iter, usize};
 use itertools::Itertools;
 use solutions::misc::{graph::{Edge, Graph}, point::Point};
 
+#[derive(Clone, Debug)]
+enum Errors {
+    NoFile,
+    CantParse,
+    NoPath
+}
+
 pub fn solve() {
-    let input = fs::read_to_string("../inputs/day18").expect("Should be able to read input");
-    let obstacles = parse_input(&input);
-    println!("P1: {p1}", p1 = part1(&obstacles.clone().into_iter().take(1024).collect_vec(), 71));
-    println!("P2: {p2:?}", p2 = part2(&obstacles, 71));
+    fs::read_to_string("../inputs/day18").map_err(|_| Errors::NoFile).and_then(
+        |input| parse_input(&input).and_then(|obstacles| {
+            println!("P1: {p1:?}", p1 = part1(&obstacles.clone().into_iter().take(1024).collect_vec(), 71));
+            println!("P2: {p2:?}", p2 = part2(&obstacles, 71));
+            Ok(())
+        }))
+        .unwrap();
 }
 
-fn parse_input(input:&String) -> Result<Vec<Point>> {
+fn parse_input(input:&String) -> Result<Vec<Point>, Errors> {
     input.lines()
-        .map(|l| l.split_once(',')?)
-        .map(|(sx,sy)| (sx.parse()?, sy.parse()?))
-        .map(Point::from_tuple)
-        .collect_vec()
+        .map(|l| l.split_once(',').ok_or(Errors::CantParse))
+        .map(|r| r.and_then(|(sx, sy)| {
+            let x = sx.parse().map_err(|_| Errors::CantParse)?;
+            let y = sy.parse().map_err(|_| Errors::CantParse)?;
+            Ok(Point::new(x, y))
+        }))
+        .collect()
 }
 
-fn part1(obstacles: &Vec<Point>, grid_size:usize) -> Result<usize, NoPath> {
+fn part1(obstacles: &Vec<Point>, grid_size:usize) -> Result<usize, Errors> {
     shortest_path(obstacles.as_slice(), grid_size)
 }
 
@@ -34,10 +47,7 @@ fn part2(obstacles: &Vec<Point>, grid_size:usize) -> Point {
     obstacles[l]
 }
 
-#[derive(Clone)]
-struct NoPath;
-
-fn shortest_path(obstacles: &[Point], grid_size:usize) -> Result<usize, NoPath> {
+fn shortest_path(obstacles: &[Point], grid_size:usize) -> Result<usize, Errors> {
     let grid_size = grid_size as i32;
     let start = Point::new(0,0);
     let end = Point::new(grid_size-1,grid_size-1);
@@ -49,7 +59,7 @@ fn shortest_path(obstacles: &[Point], grid_size:usize) -> Result<usize, NoPath> 
     g.dijkstra(start) [&end]
         .as_ref()
         .map(|x| x.0)
-        .ok_or(NoPath)
+        .ok_or(Errors::NoPath)
 }
 
 fn edges(p:&Point, obstacles: &HashSet<&Point>, grid_size:i32) -> Vec<Edge<Point>> {
