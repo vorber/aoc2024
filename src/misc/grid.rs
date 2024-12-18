@@ -23,6 +23,10 @@ impl<T> Grid<T>  {
    pub fn dup<U: Default + Clone>(&self) -> Grid<U> {
         Grid {width: self.width, height: self.height, cells: vec![U::default(); self.width*self.height]}
     }  
+
+    pub fn new<U: Clone>(width: usize, height: usize, value: U) -> Grid<U> {
+        Grid {width, height, cells: vec![value; width*height]}
+    }
 }
 
 impl<T: Copy + PartialEq> Grid<T> {

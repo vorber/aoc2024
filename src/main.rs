@@ -22,6 +22,7 @@ fn solve(day:&String) {
         "15" => puzzles::day15::solve(),
         "16" => puzzles::day16::solve(),
         "17" => puzzles::day17::solve(),
+        "18" => puzzles::day18::solve(),
         _ => panic!("no solution known!")
     }
 }

@@ -7,7 +7,7 @@ pub struct Graph<V,C> {
     pub costs: HashMap<Edge<V>, C> 
 }
 
-#[derive(Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
 pub struct Edge<V> {
     pub from: V,
     pub to: V,

@@ -22,6 +22,12 @@ impl Point {
         Point { x, y }
     }
 
+    #[inline]
+    #[must_use]
+    pub const fn from_tuple(t:(Coord,Coord)) -> Self {
+        Point::new(t.0, t.1)
+    }
+
     pub fn offset(self, count: usize, dir:Point) -> Self {
         self + (count as  Coord) * dir 
     }
@@ -66,6 +72,11 @@ impl Point {
     #[inline]
     pub fn magnitude(&self) -> Coord {
         self.x*self.x + self.y*self.y
+    }
+
+    #[inline]
+    pub fn ortho_neighbors(&self) -> [Self;4] {
+        ORTHO_DIR.map(|d| self + &d)
     }
 }
 
