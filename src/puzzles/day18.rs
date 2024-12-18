@@ -14,7 +14,7 @@ fn parse_input(input:&String) -> Vec<Point> {
     input.lines()
         .map(|l| l.split_once(',').unwrap())
         .map(|(sx,sy)| (sx.parse().unwrap(), sy.parse().unwrap()))
-        .map(|(x,y)| Point::new(x, y))
+        .map(Point::from_tuple)
         .collect_vec()
 }
 
