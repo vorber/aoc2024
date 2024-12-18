@@ -10,16 +10,16 @@ pub fn solve() {
     println!("P2: {p2:?}", p2 = part2(&obstacles, 71));
 }
 
-fn parse_input(input:&String) -> Vec<Point> {
+fn parse_input(input:&String) -> Result<Vec<Point>> {
     input.lines()
-        .map(|l| l.split_once(',').unwrap())
-        .map(|(sx,sy)| (sx.parse().unwrap(), sy.parse().unwrap()))
+        .map(|l| l.split_once(',')?)
+        .map(|(sx,sy)| (sx.parse()?, sy.parse()?))
         .map(Point::from_tuple)
         .collect_vec()
 }
 
-fn part1(obstacles: &Vec<Point>, grid_size:usize) -> usize {
-    shortest_path(obstacles.as_slice(), grid_size).unwrap_or(0)
+fn part1(obstacles: &Vec<Point>, grid_size:usize) -> Result<usize, NoPath> {
+    shortest_path(obstacles.as_slice(), grid_size)
 }
 
 fn part2(obstacles: &Vec<Point>, grid_size:usize) -> Point {
