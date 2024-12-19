@@ -3,7 +3,7 @@ use std::{collections::{HashMap, HashSet}, fs, iter, usize};
 use itertools::Itertools;
 use solutions::misc::{graph::{Edge, Graph}, point::Point};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 enum Errors {
     NoFile,
     CantParse,
@@ -101,8 +101,9 @@ mod tests {
 1,6
 2,0
 ");
-        let obstacles = parse_input(&i);
-        assert_eq!(part1(&obstacles.clone().into_iter().take(12).collect_vec(),7), 22);
+        let obstacles = parse_input(&i).unwrap();
+        let p1_obstacles = obstacles.clone().into_iter().take(12).collect_vec();
+        assert_eq!(part1(&p1_obstacles,7).unwrap(), 22);
         assert_eq!(part2(&obstacles,7), Point::new(6, 1));
     }
 }
