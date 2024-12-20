@@ -10,15 +10,12 @@ enum Errors {
     NoPath
 }
 
-#[derive(Debug)]
-struct Cheat {
-    value: usize
-}
 
 pub fn solve() {
     let (p1, p2) = fs::read_to_string("../inputs/day20").map_err(|_| Errors::NoFile)
         .map(|input| Grid::char_grid(&input))
-        .and_then(|grid| Ok((_solve(&grid, 2, 100)?.len(), _solve(&grid, 20, 100)?.len())))
+        .and_then(|grid| Ok((_solve(&grid, 2, 100)?, _solve(&grid, 20, 100)?)))
+        .map(|(cheats1, cheats2)| (cheats1.len(), cheats2.len()))
         .unwrap();
     println!("P1: {p1}\nP2:{p2}");
 }
@@ -80,7 +77,7 @@ mod tests {
 #...#...#...###
 ###############
 ");
-        let grid = parse_input(&i).unwrap();
+        let grid = Grid::char_grid(&i);
         let p1 = _solve(&grid, 2, 0).unwrap().into_iter().counts();
         assert_eq!(p1[&2], 14);
         assert_eq!(p1[&4], 14);
