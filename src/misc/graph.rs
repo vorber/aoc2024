@@ -1,5 +1,11 @@
 use std::{cmp::Ordering, collections::{BinaryHeap, HashMap}, hash::Hash, ops::Add};
 
+use itertools::Itertools;
+
+#[derive(Debug)]
+pub enum GraphError {
+    NoPath
+} 
 
 pub struct Graph<V,C> {
     pub vertices: Vec<V>,
@@ -55,5 +61,18 @@ impl<V:Eq+Ord+Copy+Hash, C:Default+Copy+Ord+Add<Output = C>> Graph<V,C> {
         }
         distances
     } 
+
+    pub fn find_path(&self, start:V, end:V) -> Result<Vec<V>, GraphError> {
+        let visits = self.dijkstra(start);
+        let mut path = Vec::new();
+        let mut v = &end;
+        while v != &start {
+            let visit = visits.get(v).ok_or(GraphError::NoPath)?;
+            path.push(v.clone());
+            v = visit.as_ref().and_then(|x| x.1.first()).ok_or(GraphError::NoPath)?;
+        }
+        path.push(start.clone());
+        Ok(path.into_iter().rev().collect_vec())
+    }
 }
 

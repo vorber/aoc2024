@@ -1,4 +1,4 @@
-use std::{hash::{Hash, Hasher}, ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
+use std::{collections::HashSet, hash::{Hash, Hasher}, ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 type Coord = i32;
 
 pub const NORTH: Point = Point::new(0, -1);
@@ -28,8 +28,8 @@ impl Point {
         Point::new(t.0, t.1)
     }
 
-    pub fn offset(self, count: usize, dir:Point) -> Self {
-        self + (count as  Coord) * dir 
+    pub fn offset<U: AsRef<Point>>(self, count: usize, dir:U) -> Self {
+        self + dir.as_ref().mul(count)
     }
 
     pub fn rotate_cw(&self) -> Self {
@@ -77,6 +77,20 @@ impl Point {
     #[inline]
     pub fn ortho_neighbors(&self) -> [Self;4] {
         ORTHO_DIR.map(|d| self + &d)
+    }
+
+    pub fn manhattan_neighbors(&self, d:usize) -> HashSet<Self> {
+        let mut res = Vec::new();
+        for dx in 0..=d {
+            for dy in 0..=d-dx {
+                if dx == 0 && dy == 0 { continue; }
+                res.push(Point::new(self.x+dx as Coord, self.y+dy as Coord));
+                res.push(Point::new(self.x+dx as Coord, self.y-dy as Coord));
+                res.push(Point::new(self.x-dx as Coord, self.y+dy as Coord));
+                res.push(Point::new(self.x-dx as Coord, self.y-dy as Coord));
+            }
+        }
+        res.into_iter().collect()
     }
 }
 
@@ -163,6 +177,15 @@ impl Mul<Point> for usize {
     #[inline]
     fn mul(self, rhs: Point) -> Self::Output {
         rhs * self as Coord
+    }
+}
+
+impl Mul<usize> for &Point {
+    type Output = Point;
+
+    #[inline]
+    fn mul(self, rhs: usize) -> Self::Output {
+        rhs * *self 
     }
 }
 
