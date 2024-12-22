@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, HashSet}, fs, num::ParseIntError};
+use std::{collections::{HashMap, HashSet}, fs, num::ParseIntError, time::{Duration, Instant}};
 use itertools::Itertools;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -12,20 +12,23 @@ pub fn solve() {
         .and_then(|input| parse(input).map_err(|_| Errors::InvalidInput))
         .map(|ns| (part1(&ns), part2(&ns)))
         .unwrap();
-    println!("P1: {p1}\nP2:{p2}");
+    println!("P1: {p1:?}\nP2:{p2:?}");
 }
 
 fn parse(input: String) -> Result<Vec<i64>, ParseIntError> {
     input.lines().map(|l| Ok(l.parse()?)).collect()
 }
 
-fn part1(numbers:&Vec<i64>) -> i64 {
-    numbers.into_iter()
+fn part1(numbers:&Vec<i64>) -> (i64, Duration) {
+    let start = Instant::now();
+    let res = numbers.into_iter()
         .map(|n| seq(*n)[2000])
-        .sum()
+        .sum();
+    (res, start.elapsed())
 }
 
-fn part2(numbers:&Vec<i64>) -> i64 {
+fn part2(numbers:&Vec<i64>) -> (i64, Duration) {
+    let start = Instant::now();
     let prices = numbers.into_iter().map(|n| seq(*n).iter().map(|v| v % 10).collect_vec()).collect_vec();
     let mut sums = HashMap::new();
     for s in prices.into_iter() {
@@ -36,7 +39,7 @@ fn part2(numbers:&Vec<i64>) -> i64 {
             if m.insert(p) { sums.entry(p).and_modify(|e| *e += v).or_insert(v); };
         }
     }
-    *sums.values().max().unwrap()
+    (*sums.values().max().unwrap(), start.elapsed())
 }
 
 fn seq(number:i64) -> Vec<i64> {
