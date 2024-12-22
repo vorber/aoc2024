@@ -85,12 +85,12 @@ fn shortest_seq(s:&str, depth:usize) -> usize {
         .map(|(k,v)| ((k.0, k.1, 0), v.len()))
         .collect();
 
-    fn shortest_char_seq<'a>(
+    fn shortest_char_seq(
         p:char, 
         c:char, 
         depth: usize, 
         l0: &HashMap<(char, char), String>,
-        known: &'a mut HashMap<(char, char, usize), usize>) -> usize 
+        known: &mut HashMap<(char, char, usize), usize>) -> usize 
     {
         if known.contains_key(&(p,c,depth)) { return known[&(p,c,depth)];}
         let t = l0[&(p,c)].clone();
