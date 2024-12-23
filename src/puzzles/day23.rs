@@ -1,5 +1,6 @@
-use std::{collections::{HashMap, HashSet}, fs, hash::Hash, num::ParseIntError, time::{Duration, Instant}};
+use std::{collections::{HashMap, HashSet}, fs, hash::Hash};
 use itertools::Itertools;
+use solutions::misc::measure::measure;
 
 #[derive(Clone, Debug, PartialEq)]
 enum Errors {
@@ -10,7 +11,7 @@ enum Errors {
 pub fn solve() {
     let (p1, p2) = fs::read_to_string("../inputs/day23").map_err(|_| Errors::NoFile)
         .and_then(|input| parse(input))
-        .map(|ns| (part1(&ns), part2(&ns)))
+        .map(|ns| (measure(part1, &ns), measure(part2, &ns)))
         .unwrap();
     println!("P1: {p1:?}\nP2:{p2:?}");
 }
@@ -23,8 +24,7 @@ fn parse(input: String) -> Result<Vec<(String, String)>, Errors> {
         .collect()
 }
 
-fn part1(es:&Vec<(String,String)>) -> (usize, Duration) {
-    let start = Instant::now();
+fn part1(es:&Vec<(String,String)>) -> usize {
     let mut neighbors = HashSet::new();
     let mut vs = HashSet::new();
     for (a,b) in es {
@@ -42,12 +42,10 @@ fn part1(es:&Vec<(String,String)>) -> (usize, Duration) {
             }
         }
     }
-
-    (l3/3, start.elapsed())
+    l3/3
 }
 
-fn part2(es:&Vec<(String,String)>) -> (String, Duration) {
-    let start = Instant::now();
+fn part2(es:&Vec<(String,String)>) -> String {
     let mut neighbors = HashMap::new();
     let mut vs = HashSet::new();
     for (a,b) in es {
@@ -56,12 +54,10 @@ fn part2(es:&Vec<(String,String)>) -> (String, Duration) {
         neighbors.entry(v1).and_modify(|vs: &mut HashSet<Vertex>| {vs.insert(v2);}).or_insert(HashSet::from([v2]));
         neighbors.entry(v2).and_modify(|vs: &mut HashSet<Vertex>| {vs.insert(v1);}).or_insert(HashSet::from([v1]));
     }
-    let pass = bron_kerbosch(vs, HashSet::new(), HashSet::new(), &neighbors).iter()
+    bron_kerbosch(vs, HashSet::new(), HashSet::new(), &neighbors).iter()
         .max_by(|c1,c2| c1.len().cmp(&c2.len()))
-        .map(|vs| vs.iter().map(|v| v.label).collect_vec())
-        .map(|vs| vs.iter().sorted().join(","))
-        .unwrap_or(String::new());
-    (pass, start.elapsed())
+        .map(|vs| vs.iter().map(|v| v.label).sorted().join(","))
+        .unwrap_or(String::new())
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -129,7 +125,7 @@ tb-vc
 td-yn
 ");
         let es = parse(i).unwrap();
-        assert_eq!(part1(&es).0, 7);
-        assert_eq!(part2(&es).0, "co,de,ka,ta");
+        assert_eq!(part1(&es), 7);
+        assert_eq!(part2(&es), "co,de,ka,ta");
     }
 }
