@@ -69,7 +69,7 @@ mod tests {
 2024
 ");
         let ns = parse(i).unwrap();
-        assert_eq!(part1(&ns), 37327623);
+        assert_eq!(part1(&ns).0, 37327623);
     }
 
     #[test]
@@ -80,6 +80,6 @@ mod tests {
 2024
 ");
         let ns = parse(i).unwrap();
-        assert_eq!(part2(&ns), 23);
+        assert_eq!(part2(&ns).0, 23);
     }
 }
