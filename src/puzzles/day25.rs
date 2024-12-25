@@ -39,9 +39,7 @@ fn part1(inputs:&(Vec<[u8;5]>, Vec<[u8;5]>)) -> usize {
     let (locks, keys) = inputs;
     locks.iter()
         .cartesian_product(keys.iter())
-        .filter_map(|(l,k)| sum(l,k).iter()
-            .all(|v| *v<=7)
-            .then_some(1))
+        .filter_map(|(l,k)| sum(l,k).iter().all(|v| *v<=7).then_some(1))
         .sum()
 }
 
