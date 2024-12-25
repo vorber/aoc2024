@@ -32,7 +32,11 @@ fn parse(input: String) -> Result<(Vec<[u8;5]>, Vec<[u8;5]>), Errors> {
 }
 
 fn sum(a:&[u8;5], b:&[u8;5]) -> [u8;5] {
-    a.iter().zip(b.iter()).map(|(a,b)| a+b).collect_vec().try_into().unwrap()
+    a.iter().zip(b.iter())
+        .map(|(a,b)| a+b)
+        .collect_vec()
+        .try_into()
+        .unwrap()
 }
 
 fn part1(inputs:&(Vec<[u8;5]>, Vec<[u8;5]>)) -> usize {
